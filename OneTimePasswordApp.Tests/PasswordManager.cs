@@ -91,7 +91,6 @@ namespace OneTimePasswordApp.Tests
             Assert.IsFalse(passwordValid);
         }
         
-        [Ignore("Long running test")]
         [Test]
         public async Task ValidatePassword_GivenCorrectPasswordForUserIdOutsideDefaultTimeLimitShouldInvalidePassword()
         {
