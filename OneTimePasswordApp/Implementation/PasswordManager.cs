@@ -7,7 +7,7 @@ namespace OneTimePasswordApp.Implementation
 {
     public class PasswordManager : IPasswordManager
     {
-        private readonly IDictionary<string, Password> passwordList = new Dictionary<string, Password>();
+        private IDictionary<string, Password> passwordList = new Dictionary<string, Password>();
 
         private readonly IPasswordGenerator passwordGenerator;
 
@@ -27,17 +27,24 @@ namespace OneTimePasswordApp.Implementation
             return password;
         }
 
-        public bool ValidatePassword(string id, string password)
+        public bool IsPasswordCorrectAndValid(string userId, string password)
         {
-            if (!passwordList.ContainsKey(id))
-                return false;
-            var storedPassword = passwordList[id];
-            var validation = storedPassword.Value == password && ((DateTime.UtcNow - storedPassword.GenerationTime).TotalMilliseconds < storedPassword.Timeout);
-            if (validation)
+            if (!passwordList.ContainsKey(userId))
             {
-                passwordList.Remove(id);
+                return false;
             }
-            return validation;
+            var storedPassword = passwordList[userId];
+            var isValid = storedPassword.Value == password && PasswordHasNotExpired(storedPassword);
+            if (isValid)
+            {
+                passwordList.Remove(userId);
+            }
+            return isValid;
+        }
+
+        private static bool PasswordHasNotExpired(Password storedPassword)
+        {
+            return (Math.Abs((DateTime.UtcNow - storedPassword.GenerationTime).TotalMilliseconds) < storedPassword.TimeoutMilliseconds);
         }
     }
 }

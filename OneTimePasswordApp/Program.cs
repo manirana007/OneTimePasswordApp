@@ -43,7 +43,7 @@ namespace OneTimePasswordApp
                             Console.Write("Please enter password:");
                             password = Console.ReadLine();
 
-                            Console.WriteLine("Password valid: {0}", passwordManager.ValidatePassword(id, password));
+                            Console.WriteLine("Password valid: {0}", passwordManager.IsPasswordCorrectAndValid(id, password));
                             break;
                         case 3:
                             return;

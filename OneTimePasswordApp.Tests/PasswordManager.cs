@@ -24,7 +24,7 @@ namespace OneTimePasswordApp.Tests
         }
 
         [Test]
-        public void CreatePassword_GivenSameUserIdMultipleTimes()
+        public async Task CreatePassword_GivenUserIdMultipleTimes()
         {
             //Arrange
             IPasswordGenerator passwordGenerator = new Implementation.PasswordGenerator();
@@ -32,13 +32,14 @@ namespace OneTimePasswordApp.Tests
             //Act
             IPasswordManager passwordManager = new Implementation.PasswordManager(passwordGenerator);
             var passwordOne = passwordManager.CreatePassword("id");
+            await Task.Delay(1);
             var passwordTwo = passwordManager.CreatePassword("id");
-            var passwordValidated = passwordManager.ValidatePassword("id", passwordOne);
+            var passwordValid = passwordManager.IsPasswordCorrectAndValid("id", passwordOne);
 
             //Assert
-            Assert.IsFalse(passwordValidated);
-            passwordValidated = passwordManager.ValidatePassword("id", passwordTwo);
-            Assert.IsTrue(passwordValidated);
+            Assert.IsFalse(passwordValid);
+            passwordValid = passwordManager.IsPasswordCorrectAndValid("id", passwordTwo);
+            Assert.IsTrue(passwordValid);
         }
         
         [Test]
@@ -51,10 +52,10 @@ namespace OneTimePasswordApp.Tests
             //Act
             IPasswordManager passwordManager = new Implementation.PasswordManager(passwordGenerator.Object);
             var password = passwordManager.CreatePassword("id");
-            var passwordValidated = passwordManager.ValidatePassword("id", password);
+            var passwordValid = passwordManager.IsPasswordCorrectAndValid("id", password);
 
             //Assert
-            Assert.IsTrue(passwordValidated);
+            Assert.IsTrue(passwordValid);
         }
         
         [Test]
@@ -67,10 +68,10 @@ namespace OneTimePasswordApp.Tests
             //Act
             IPasswordManager passwordManager = new Implementation.PasswordManager(passwordGenerator.Object);
             passwordManager.CreatePassword("id");
-            var passwordValidated = passwordManager.ValidatePassword("id", "wrong password");
+            var passwordValid = passwordManager.IsPasswordCorrectAndValid("id", "wrong password");
 
             //Assert
-            Assert.IsFalse(passwordValidated);
+            Assert.IsFalse(passwordValid);
         }
         
         [Test]
@@ -84,12 +85,13 @@ namespace OneTimePasswordApp.Tests
             IPasswordManager passwordManager = new Implementation.PasswordManager(passwordGenerator.Object);
             var password = passwordManager.CreatePassword("id", 1);
             await Task.Delay(1);
-            var passwordValidated = passwordManager.ValidatePassword("id", password);
+            var passwordValid = passwordManager.IsPasswordCorrectAndValid("id", password);
 
             //Assert
-            Assert.IsFalse(passwordValidated);
+            Assert.IsFalse(passwordValid);
         }
         
+        [Ignore("Long running test")]
         [Test]
         public async Task ValidatePassword_GivenCorrectPasswordForUserIdOutsideDefaultTimeLimitShouldInvalidePassword()
         {
@@ -101,10 +103,10 @@ namespace OneTimePasswordApp.Tests
             IPasswordManager passwordManager = new Implementation.PasswordManager(passwordGenerator.Object);
             var password = passwordManager.CreatePassword("id");
             await Task.Delay(30000);
-            var passwordValidated = passwordManager.ValidatePassword("id", password);
+            var passwordValid = passwordManager.IsPasswordCorrectAndValid("id", password);
 
             //Assert
-            Assert.IsFalse(passwordValidated);
+            Assert.IsFalse(passwordValid);
         }
         
         [Test]
@@ -117,10 +119,10 @@ namespace OneTimePasswordApp.Tests
             //Act
             IPasswordManager passwordManager = new Implementation.PasswordManager(passwordGenerator.Object);
             var password = passwordManager.CreatePassword("id");
-            var passwordValidated = passwordManager.ValidatePassword("invalid id", password);
+            var passwordValid = passwordManager.IsPasswordCorrectAndValid("invalid id", password);
 
             //Assert
-            Assert.IsFalse(passwordValidated);
+            Assert.IsFalse(passwordValid);
         }
 
         
@@ -134,12 +136,12 @@ namespace OneTimePasswordApp.Tests
             //Act
             IPasswordManager passwordManager = new Implementation.PasswordManager(passwordGenerator);
             var password = passwordManager.CreatePassword("id");
-            var passwordValidated = passwordManager.ValidatePassword("id", password);
+            var passwordValid = passwordManager.IsPasswordCorrectAndValid("id", password);
 
             //Assert
-            Assert.IsTrue(passwordValidated);
-            passwordValidated = passwordManager.ValidatePassword("id", password);
-            Assert.IsFalse(passwordValidated);
+            Assert.IsTrue(passwordValid);
+            passwordValid = passwordManager.IsPasswordCorrectAndValid("id", password);
+            Assert.IsFalse(passwordValid);
         }
     }
 }
