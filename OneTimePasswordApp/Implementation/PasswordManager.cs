@@ -32,7 +32,10 @@ namespace OneTimePasswordApp.Implementation
             if (!passwordList.ContainsKey(id))
                 return false;
             var storedPassword = passwordList[id];
-            return storedPassword.Value == password && ((DateTime.UtcNow - storedPassword.GenerationTime).TotalMilliseconds < storedPassword.Timeout);
+            var validation = storedPassword.Value == password && ((DateTime.UtcNow - storedPassword.GenerationTime).TotalMilliseconds < storedPassword.Timeout);
+            if (validation)
+                passwordList.Remove(id);
+            return validation;
         }
     }
 }

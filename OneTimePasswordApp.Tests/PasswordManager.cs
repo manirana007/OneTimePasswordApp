@@ -22,6 +22,24 @@ namespace OneTimePasswordApp.Tests
             //Assert
             Assert.AreEqual("password", password);
         }
+
+        [Test]
+        public void CreatePassword_GivenSameUserIdMultipleTimes()
+        {
+            //Arrange
+            IPasswordGenerator passwordGenerator = new Implementation.PasswordGenerator();
+
+            //Act
+            IPasswordManager passwordManager = new Implementation.PasswordManager(passwordGenerator);
+            var passwordOne = passwordManager.CreatePassword("id");
+            var passwordTwo = passwordManager.CreatePassword("id");
+            var passwordValidated = passwordManager.ValidatePassword("id", passwordOne);
+
+            //Assert
+            Assert.IsFalse(passwordValidated);
+            passwordValidated = passwordManager.ValidatePassword("id", passwordTwo);
+            Assert.IsTrue(passwordValidated);
+        }
         
         [Test]
         public void ValidatePassword_GivenCorrectPasswordForUserIdWithinTimeLimitShouldReturnValidatePassword()
@@ -105,22 +123,23 @@ namespace OneTimePasswordApp.Tests
             Assert.IsFalse(passwordValidated);
         }
 
+        
+        
         [Test]
-        public void CreatePassword_GivenSameUserIdMultipleTimes()
+        public void ValidatePassword_ShouldAllowOneTimeAccessWithPassword()
         {
             //Arrange
             IPasswordGenerator passwordGenerator = new Implementation.PasswordGenerator();
 
             //Act
             IPasswordManager passwordManager = new Implementation.PasswordManager(passwordGenerator);
-            var passwordOne = passwordManager.CreatePassword("id");
-            var passwordTwo = passwordManager.CreatePassword("id");
-            var passwordValidated = passwordManager.ValidatePassword("id", passwordOne);
+            var password = passwordManager.CreatePassword("id");
+            var passwordValidated = passwordManager.ValidatePassword("id", password);
 
             //Assert
-            Assert.IsFalse(passwordValidated);
-            passwordValidated = passwordManager.ValidatePassword("id", passwordTwo);
             Assert.IsTrue(passwordValidated);
+            passwordValidated = passwordManager.ValidatePassword("id", password);
+            Assert.IsFalse(passwordValidated);
         }
     }
 }
