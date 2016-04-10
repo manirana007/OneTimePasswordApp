@@ -34,7 +34,9 @@ namespace OneTimePasswordApp.Implementation
             var storedPassword = passwordList[id];
             var validation = storedPassword.Value == password && ((DateTime.UtcNow - storedPassword.GenerationTime).TotalMilliseconds < storedPassword.Timeout);
             if (validation)
+            {
                 passwordList.Remove(id);
+            }
             return validation;
         }
     }
