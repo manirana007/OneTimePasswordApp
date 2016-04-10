@@ -1,2 +1,2 @@
 # OneTimePasswordApp
-A simple utility app to generate and validate password for given user id.
+A simple utility app to generate and validate one time password for given user id.
